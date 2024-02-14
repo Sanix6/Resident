@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+   <url>
+
+      <loc>http:///</loc>
+
+      <changefreq>daily</changefreq>
+
+      <priority>1.0</priority>
+
+   </url>
+
+   {% for event in events %}
+   <url>
+
+      <loc>https://api.navisdevs.ru/events/{{ event.slug }}</loc>
+
+      <changefreq>daily</changefreq>
+
+      <lastmod>{{ event.last_mod|date:"c" }}</lastmod>
+
+      <priority>1.0</priority>
+
+   </url>
+   interview  design  popularity  product
+
+   {% endfor %}
+
+   {% for vacanc in vacancy %}
+   <url>
+
+      <loc>https://api.navisdevs.ru/vacancy/{{vacanc.slug}}</loc>
+
+      <changefreq>daily</changefreq>
+
+      <lastmod>{{vacanc.last_mod|date:"c"}}</lastmod>
+
+      <priority>1.0</priority>
+
+   </url>
+   {% endfor %}
+</urlset>
