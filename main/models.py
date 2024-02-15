@@ -6,8 +6,8 @@ from transliterate import translit
 
 class Slider(models.Model):
     image = models.ImageField(_('Изображение', ))
-    title = models.CharField(_('Название'), null=True, blank=True)
-    description = models.CharField(_("Текст"), null=True, blank=True)
+    title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
+    description = models.CharField(_("Текст"), max_length=255, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Слайдер'
@@ -15,12 +15,12 @@ class Slider(models.Model):
 
 
 class Estate(models.Model):
-    slug = models.SlugField(_('Слаг'))
+    slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
+    category = models.CharField(_('Категория статьи'), max_length=255, null=True, blank=True)
     image = models.ImageField(_('Изображение'))
-    title = models.CharField(_('Название'), null=True, blank=True)
+    title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
     last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
-
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -38,12 +38,12 @@ class Estate(models.Model):
 
 
 class Holiday(models.Model):
-    slug = models.SlugField(_('Слаг'))
+    category = models.CharField(_('Категория статьи'), max_length=255, null=True, blank=True)
+    slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
     image = models.ImageField(_('Изображение'))
-    title = models.CharField(_('Название'), null=True, blank=True)
+    title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
     last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
-
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -61,12 +61,12 @@ class Holiday(models.Model):
 
 
 class Product(models.Model):
-    slug = models.SlugField(_('Слаг'))
+    category = models.CharField(_('Категория статьи'), max_length=255, null=True, blank=True)
+    slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
     image = models.ImageField(_('Изображение'))
-    title = models.CharField(_('Название'), null=True, blank=True)
+    title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
     last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
-
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -84,12 +84,12 @@ class Product(models.Model):
 
 
 class Design(models.Model):
-    slug = models.SlugField(_('Слаг'))
+    slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
+    category = models.CharField(_('Категория статьи'), max_length=255, null=True, blank=True)
     image = models.ImageField(_('Изображение'))
-    title = models.CharField(_('Название'), null=True, blank=True)
+    title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
     last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
-
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -107,9 +107,10 @@ class Design(models.Model):
 
 
 class Interview(models.Model):
-    slug = models.SlugField(_('Слаг'))
+    slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
+    category = models.CharField(_('Категория статьи'), max_length=255, null=True, blank=True)
     image = models.ImageField(_('Изображение'))
-    title = models.CharField(_('Название'), null=True, blank=True)
+    title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
     last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
 
@@ -126,3 +127,32 @@ class Interview(models.Model):
     class Meta:
         verbose_name = 'Интервью'
         verbose_name_plural = 'Интервью'
+
+
+class Popular(models.Model):
+    slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
+    CATEGORY_CHOICES = (
+        ('Недвижимость', 'Недвижимость'),
+        ('Раскошный отдых', 'Раскошный отдых'),
+        ('Продукты', 'Продукты'),
+        ('Интервью', 'Интервью')
+    )
+    category = models.CharField(_('Категория'), max_length=255, choices=CATEGORY_CHOICES)
+    image = models.ImageField(_('Изображение'))
+    title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
+    data = models.DateField(_('Дата добавление'), null=True, blank=True)
+    last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        self.date = self.data.strftime("%d%m%Y")
+        english_title = translit(self.title, 'ru', reversed=True)
+        self.slug = slugify(english_title)
+        super(Popular, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Популярные',
+        verbose_name_plural = 'Популярные'

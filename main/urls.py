@@ -13,6 +13,8 @@ urlpatterns = [
     path('list/design', DesignAPIView.as_view(), name='llist-design'),
     path('design/<str:slug>', DesignDetailAPIView.as_view(), name='detail-design'),
     path('list/interview', InterViewAPIView.as_view(), name='list-interview'),
-    path('interview/<str:slug>', InterViewAPIView.as_view(), name='detail-interview')
+    path('interview/<str:slug>', InterViewAPIView.as_view(), name='detail-interview'),
+    path('list/popular', PopularAPIView.as_view(), name='list-popular'),
+    path('popular/<str:slug>', PopularDetailAPIView.as_view(), name='detail-popular')
 
 ]

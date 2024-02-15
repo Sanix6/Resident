@@ -32,6 +32,6 @@ class InterviewAdmin(admin.ModelAdmin):
     list_display = ['title']
 
 
-@admin.register(Estate)
-class EstateAdmin(admin.ModelAdmin):
-    list_display = ['title']
+@admin.register(Popular)
+class PopularAdmin(admin.ModelAdmin):
+    list_display = ['title', 'category']

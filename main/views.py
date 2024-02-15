@@ -41,7 +41,7 @@ class ProductAPIView(generics.ListAPIView):
 
 class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
-    serializer_class = HolidaySerializers
+    serializer_class = ProductSerializers
     lookup_field = 'slug'
 
 
@@ -66,4 +66,16 @@ class InterViewAPIView(generics.ListAPIView):
 class InterViewDetailAPIView(generics.RetrieveAPIView):
     queryset = Interview.objects.all()
     serializer_class = InterviewSerializers
+    lookup_field = 'slug'
+
+
+class PopularAPIView(generics.ListAPIView):
+    queryset = Popular.objects.all()
+    serializer_class = PopularSerializers
+    lookup_field = 'slug'
+
+
+class PopularDetailAPIView(generics.RetrieveAPIView):
+    queryset = Popular.objects.all()
+    serializer_class = PopularSerializers
     lookup_field = 'slug'
