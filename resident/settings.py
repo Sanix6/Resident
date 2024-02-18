@@ -20,10 +20,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'drf_yasg',
+    # 'ckeditor',
+    'ckeditor_uploader',
+    'django_ckeditor_5',
 
     # apps
     'users',
-    'main'
+    'main', 
+    'home',
 ]
 
 MIDDLEWARE = [
@@ -55,12 +59,19 @@ TEMPLATES = [
     },
 ]
 
+
+
+
 WSGI_APPLICATION = 'resident.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv("NAME"), 
+        'USER': os.getenv("USER"), 
+        'PASSWORD': os.getenv("PASSWORD"),
+        'HOST': os.getenv("HOST"), 
+        'PORT': os.getenv("PORT"),
     }
 }
 
@@ -87,6 +98,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'Asia/Bishkek'
@@ -95,10 +111,14 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -116,6 +136,17 @@ CORS_ALLOW_METHODS = (
     "PUT",
 )
 
+
+
+
+
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+
+
+
 # CSRF_TRUSTED_ORIGINS = [
 #     "*",
 # ]
+
+
+
