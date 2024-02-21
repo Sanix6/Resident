@@ -3,6 +3,8 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from transliterate import translit
 from django_ckeditor_5.fields import CKEditor5Field
+from ckeditor.fields import RichTextField
+
 
 class Slider(models.Model):
     image = models.ImageField(_('Изображение', ))
@@ -17,11 +19,12 @@ class Slider(models.Model):
 class Estate(models.Model):
     slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
     CATEGORY_CHOICES = (
-        ('Отели','Отели'),
-        ('Рестораны','Рестораны'),
-        ('Спа-салоны','Спа-салоны')
-    ) 
-    category = models.CharField(_('Категория статьи'), max_length=255, null=True, blank=True, choices=CATEGORY_CHOICES, default=None)
+        ('Отели', 'Отели'),
+        ('Рестораны', 'Рестораны'),
+        ('Спа-салоны', 'Спа-салоны')
+    )
+    category = models.CharField(_('Категория статьи'), max_length=255, null=True, blank=True, choices=CATEGORY_CHOICES,
+                                default=None)
     image = models.ImageField(_('Изображение'))
     title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
@@ -42,21 +45,19 @@ class Estate(models.Model):
         verbose_name_plural = 'Недвижимости'
 
 
-
-
 class EstateDetail(models.Model):
     key = models.ForeignKey(Estate, on_delete=models.CASCADE, null=True, blank=True, related_name='estate')
     slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
     CATEGORY_CHOICES = (
-        ('Отели','Отели'),
-        ('Рестораны','Рестораны'),
-        ('Спа-салоны','Спа-салоны')
-    ) 
+        ('Отели', 'Отели'),
+        ('Рестораны', 'Рестораны'),
+        ('Спа-салоны', 'Спа-салоны')
+    )
     category = models.CharField(_('Категория статьи'), max_length=255, choices=CATEGORY_CHOICES, default=None)
     image = models.ImageField(_('Изображение'))
     title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
-    name = models.CharField(_('Имя'),max_length=255, null=True, blank=True)
-    description =CKEditor5Field(_('Text'), config_name='extends')
+    name = models.CharField(_('Имя'), max_length=255, null=True, blank=True)
+    description = RichTextField(_('Text'))
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
     last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
 
@@ -77,13 +78,13 @@ class EstateDetail(models.Model):
 
 class Holiday(models.Model):
     CATEGORY_CHOICES = (
-        ('Отели','Отели'),
-        ('Рестораны','Рестораны'),
-        ('Спа-салоны','Спа-салоны')
-    ) 
-    category = models.CharField(_('Категория статьи'), max_length=255,choices=CATEGORY_CHOICES, default=None)
+        ('Отели', 'Отели'),
+        ('Рестораны', 'Рестораны'),
+        ('Спа-салоны', 'Спа-салоны')
+    )
+    category = models.CharField(_('Категория статьи'), max_length=255, choices=CATEGORY_CHOICES, default=None)
     slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
-    image = models.ImageField(_('Изображение'))
+    image = models.ImageField(_('Изображение'), null=True, blank=True)
     title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
     last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
@@ -103,20 +104,19 @@ class Holiday(models.Model):
         verbose_name_plural = 'Раскошный отдых'
 
 
-
 class HolidayDetail(models.Model):
     key = models.ForeignKey(Holiday, on_delete=models.CASCADE, null=True, blank=True, related_name='holiday')
     CATEGORY_CHOICES = (
-        ('Отели','Отели'),
-        ('Рестораны','Рестораны'),
-        ('Спа-салоны','Спа-салоны')
-    ) 
+        ('Отели', 'Отели'),
+        ('Рестораны', 'Рестораны'),
+        ('Спа-салоны', 'Спа-салоны')
+    )
     category = models.CharField(_('Категория статьи'), max_length=255, choices=CATEGORY_CHOICES, default=None)
     slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
     image = models.ImageField(_('Изображение'))
     title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
-    name = models.CharField(_('Имя'),max_length=255, null=True, blank=True)
-    description = CKEditor5Field(_('Текст'), config_name='extends', null=True, blank=True)
+    name = models.CharField(_('Имя'), max_length=255, null=True, blank=True)
+    description = RichTextField(_('Текст'), null=True, blank=True)
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
     last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
 
@@ -128,7 +128,7 @@ class HolidayDetail(models.Model):
         super(HolidayDetail, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.title
+        return f"{self.title}"
 
     class Meta:
         verbose_name = 'Дополнительно'
@@ -158,15 +158,14 @@ class Product(models.Model):
         verbose_name_plural = 'Продукты'
 
 
-
 class ProductDetail(models.Model):
     key = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True, related_name='product')
     category = models.CharField(_('Категория статьи'), max_length=255, null=True, blank=True)
     slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
     image = models.ImageField(_('Изображение'))
     title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
-    name = models.CharField(_('Имя'),max_length=255, null=True, blank=True)
-    description = CKEditor5Field(_('Текст'),  config_name='extends',null=True, blank=True)
+    name = models.CharField(_('Имя'), max_length=255, null=True, blank=True)
+    description = RichTextField(_('Текст'), null=True, blank=True)
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
     last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
 
@@ -188,10 +187,10 @@ class ProductDetail(models.Model):
 class Design(models.Model):
     slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
     CATEGORY_CHOICES = (
-        ('Отели','Отели'),
-        ('Рестораны','Рестораны'),
-        ('Спа-салоны','Спа-салоны')
-    ) 
+        ('Отели', 'Отели'),
+        ('Рестораны', 'Рестораны'),
+        ('Спа-салоны', 'Спа-салоны')
+    )
     category = models.CharField(_('Категория статьи'), max_length=255, choices=CATEGORY_CHOICES, default=None)
     image = models.ImageField(_('Изображение'))
     title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
@@ -213,20 +212,19 @@ class Design(models.Model):
         verbose_name_plural = 'Дизайны'
 
 
-
 class DesignDetail(models.Model):
     key = models.ForeignKey(Design, on_delete=models.CASCADE, null=True, blank=True, related_name='design')
     slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
     CATEGORY_CHOICES = (
-        ('Отели','Отели'),
-        ('Рестораны','Рестораны'),
-        ('Спа-салоны','Спа-салоны')
-    ) 
-    category = models.CharField(_('Категория статьи'), max_length=255, choices=CATEGORY_CHOICES, default=None)   
+        ('Отели', 'Отели'),
+        ('Рестораны', 'Рестораны'),
+        ('Спа-салоны', 'Спа-салоны')
+    )
+    category = models.CharField(_('Категория статьи'), max_length=255, choices=CATEGORY_CHOICES, default=None)
     image = models.ImageField(_('Изображение'))
     title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
-    name = models.CharField(_('Имя'),max_length=255, null=True, blank=True)
-    description = CKEditor5Field(_('Текст'), config_name='extends', null=True, blank=True)
+    name = models.CharField(_('Имя'), max_length=255, null=True, blank=True)
+    description = RichTextField(_('Текст'), null=True, blank=True)
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
     last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
 
@@ -268,7 +266,6 @@ class Interview(models.Model):
         verbose_name_plural = 'Интервью'
 
 
-
 class InterviewDetail(models.Model):
     key = models.ForeignKey(Interview, on_delete=models.CASCADE, null=True, blank=True, related_name='interview')
     slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
@@ -276,8 +273,8 @@ class InterviewDetail(models.Model):
     image = models.ImageField(_('Изображение'))
     title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
-    name = models.CharField(_('Имя'),max_length=255, null=True, blank=True)
-    description = CKEditor5Field(_('Текст'),  config_name='extends',null=True, blank=True)
+    name = models.CharField(_('Имя'), max_length=255, null=True, blank=True)
+    description = RichTextField(_('Текст'), null=True, blank=True)
     last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
 
     def save(self, *args, **kwargs):
@@ -324,7 +321,6 @@ class Popular(models.Model):
         verbose_name_plural = 'Популярные'
 
 
-
 class PopularDetail(models.Model):
     key = models.ForeignKey(Popular, on_delete=models.CASCADE, null=True, blank=True, related_name='popular')
     slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
@@ -337,8 +333,8 @@ class PopularDetail(models.Model):
     category = models.CharField(_('Категория'), max_length=255, choices=CATEGORY_CHOICES)
     image = models.ImageField(_('Изображение'))
     title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
-    name = models.CharField(_('Имя'),max_length=255, null=True, blank=True)
-    description = CKEditor5Field(_('Текст'), config_name='extends', null=True, blank=True)
+    name = models.CharField(_('Имя'), max_length=255, null=True, blank=True)
+    description = RichTextField(_('Текст'),  null=True, blank=True)
     data = models.DateField(_('Дата добавление'), null=True, blank=True)
     last_mod = models.DateTimeField(_('Последняя мадификация'), auto_now=True)
 
@@ -355,8 +351,5 @@ class PopularDetail(models.Model):
     class Meta:
         verbose_name = 'Дополнительно',
         verbose_name_plural = 'Дополнительно'
-
-
-from django.contrib.auth.models import User
 
 

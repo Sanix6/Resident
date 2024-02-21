@@ -1,44 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
 
-   <url>
-
-      <loc>http:///</loc>
+      <loc>https://213.226.127.139/</loc>
 
       <changefreq>daily</changefreq>
 
       <priority>1.0</priority>
 
    </url>
+    {% for popularity in popular %}
+    <url>
 
-   {% for event in events %}
-   <url>
+        <loc>https://213.226.127.139/popularity/{{popularity.slug}}</loc>
 
-      <loc>https://api.navisdevs.ru/events/{{ event.slug }}</loc>
+        <changefreq>daily</changefreq>
 
-      <changefreq>daily</changefreq>
+        <lastmod>{{popularity.last_mod|date:"c"}}</lastmod>
 
-      <lastmod>{{ event.last_mod|date:"c" }}</lastmod>
+        <priority>1.0</priority>
 
-      <priority>1.0</priority>
+    </url>
+    {% endfor %}
 
-   </url>
-   interview  design  popularity  product
 
-   {% endfor %}
+    {% for estat in estate %}
+    <url>
 
-   {% for vacanc in vacancy %}
-   <url>
+        <loc>https://213.226.127.139/estat/{{ estat.slug }}</loc>
 
-      <loc>https://api.navisdevs.ru/vacancy/{{vacanc.slug}}</loc>
+        <changefreq>daily</changefreq>
 
-      <changefreq>daily</changefreq>
+        <lastmod>{{ estat.last_mod|date:"c" }}</lastmod>
 
-      <lastmod>{{vacanc.last_mod|date:"c"}}</lastmod>
+        <priority>1.0</priority>
 
-      <priority>1.0</priority>
+    </url>
 
-   </url>
-   {% endfor %}
+    {% endfor %}
+    {% for holidays in holiday %}
+    <url>
+
+        <loc>https://213.226.127.139/holiday/{{holidays.slug}}</loc>
+
+        <changefreq>daily</changefreq>
+
+        <lastmod>{{holidays.last_mod|date:"c"}}</lastmod>
+
+        <priority>1.0</priority>
+
+    </url>
+    {% endfor %}
+    {% for products in product %}
+    <url>
+
+        <loc>https://213.226.127.139/product/{{products.slug}}</loc>
+
+        <changefreq>daily</changefreq>
+
+        <lastmod>{{products.last_mod|date:"c"}}</lastmod>
+
+        <priority>1.0</priority>
+
+    </url>
+    {% endfor %}
+    {% for designs in design %}
+    <url>
+
+        <loc>https://213.226.127.139/design/{{designs.slug}}</loc>
+
+        <changefreq>daily</changefreq>
+
+        <lastmod>{{designs.last_mod|date:"c"}}</lastmod>
+
+        <priority>1.0</priority>
+
+    </url>
+    {% endfor %}
+    {% for interviews in interview %}
+    <url>
+
+        <loc>https://213.226.127.139/interview/{{interviews.slug}}</loc>
+
+        <changefreq>daily</changefreq>
+
+        <lastmod>{{interviews.last_mod|date:"c"}}</lastmod>
+
+        <priority>1.0</priority>
+
+    </url>
+    {% endfor %}
 </urlset>

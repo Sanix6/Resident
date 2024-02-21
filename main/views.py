@@ -13,6 +13,7 @@ class EstateAPIView(generics.ListAPIView):
     queryset = Estate.objects.all()
     serializer_class = EstateSerializers
     lookup_field = 'slug'
+    search_filter = ['category', 'title']
 
 
 class EstateDetailAPIView(generics.RetrieveAPIView):
@@ -25,6 +26,7 @@ class HolidayAPIView(generics.ListAPIView):
     queryset = Holiday.objects.all()
     serializer_class = HolidaySerializers
     lookup_field = 'slug'
+    search_filter = ['category', 'title']
 
 
 class HolidayDetailAPIView(generics.RetrieveAPIView):
@@ -37,6 +39,7 @@ class ProductAPIView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = HolidaySerializers
     lookup_field = 'slug'
+    search_filter = ['category', 'title']
 
 
 class ProductDetailAPIView(generics.RetrieveAPIView):
@@ -49,6 +52,7 @@ class DesignAPIView(generics.ListAPIView):
     queryset = Design.objects.all()
     serializer_class = DesignSerializers
     lookup_field = 'slug'
+    search_filter = ['category', 'title']
 
 
 class DesignDetailAPIView(generics.RetrieveAPIView):
@@ -61,6 +65,7 @@ class InterViewAPIView(generics.ListAPIView):
     queryset = Interview.objects.all()
     serializer_class = InterviewSerializers
     lookup_field = 'slug'
+    search_filter = ['category', 'title']
 
 
 class InterViewDetailAPIView(generics.RetrieveAPIView):
@@ -73,6 +78,7 @@ class PopularAPIView(generics.ListAPIView):
     queryset = Popular.objects.all()
     serializer_class = PopularSerializers
     lookup_field = 'slug'
+    search_filter = ['category', 'title']
 
 
 class PopularDetailAPIView(generics.RetrieveAPIView):
