@@ -11,6 +11,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'jazzmin',
+    'smart_selects',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -24,11 +25,14 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'django_ckeditor_5',
 
+
     # apps
     'users',
     'main',
     'home',
 ]
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -46,7 +50,7 @@ ROOT_URLCONF = 'resident.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -61,18 +65,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'resident.wsgi.application'
 
+# AUTH_USER_MODEL = "users.User"
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'resident', 
+        'USER': 'navis', 
+        'PASSWORD': 'person02',
+        'HOST': 'localhost', 
+        'PORT': '',
+    },
 }
 
 JAZZMIN_SETTINGS = {
     "site_title": "Resident",
     "site_header": "Resident",
     "site_brand": "Resident",
-    "show_ui_builder": True,
+    "SHOW_MODEL_ICONS": False, 
+    "show_ui_builder": False,
 
 }
 
@@ -89,7 +101,25 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+
 ]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://resident-kg.vercel.app",
+]
+
+
+
+CORS_ALLOWED_ORIGINS = [
+    "https://resident-kg.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:3001",
+]
+
+
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -111,10 +141,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-]
+
+CORS_ALLOW_ALL_METHODS = True
+
+
+CORS_ALLOW_ALL_HEADERS = True
+
 
 CORS_ALLOW_METHODS = (
     "DELETE",
@@ -125,179 +157,85 @@ CORS_ALLOW_METHODS = (
     "PUT",
 )
 
+
+NIKITA_LOGIN = os.getenv("NITKITA_LOGIN")
+NIKITA_PASSWORD = os.getenv("NITKITA_PASSWORD")
+NIKITA_SENDER = os.getenv("NITKITA_SENDER")
+RESIDENT_NUMBER = os.getenv("RESIDENT_NUMBER")
+
+
+
 CKEDITOR_UPLOAD_PATH = 'uploads/'
 
 
+CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
+
+
 CKEDITOR_CONFIGS = {
-    "default": {
-        "height": 200,
-        "width": "full",
-    },
+    'default': {
+        "height": 400,
+        "width": 600,
+        'skin': 'moono',
+        # 'skin': 'office2013',
+        'toolbar_Basic': [
+            ['Source', '-', 'Bold', 'Italic']
+        ],
+        'toolbar_YourCustomToolbarConfig': [
+            {'name': 'document', 'items': ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates']},
+            {'name': 'clipboard', 'items': ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
+            {'name': 'editing', 'items': ['Find', 'Replace', '-', 'SelectAll']},
+            {'name': 'forms',
+             'items': ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton',
+                       'HiddenField']},
+            '/',
+            {'name': 'basicstyles',
+             'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
+            {'name': 'paragraph',
+             'items': ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-',
+                       'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl',
+                       'Language']},
+            {'name': 'links', 'items': ['Link', 'Unlink', 'Anchor']},
+            {'name': 'insert',
+             'items': ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe']},
+            '/',
+            {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
+            {'name': 'colors', 'items': ['TextColor', 'BGColor']},
+            {'name': 'tools', 'items': ['Maximize', 'ShowBlocks']},
+            {'name': 'about', 'items': ['About']},
+            '/',  # put this to force next toolbar on new line
+            {'name': 'yourcustomtools', 'items': [
+                # put the name of your editor.ui.addButton here
+                'Preview',
+                'Maximize',
+
+            ]},
+        ],
+        'toolbar': 'YourCustomToolbarConfig',  # put selected toolbar config here
+        # 'toolbarGroups': [{ 'name': 'document', 'groups': [ 'mode', 'document', 'doctools' ] }],
+        # 'height': 291,
+        # 'width': '100%',
+        # 'filebrowserWindowHeight': 725,
+        # 'filebrowserWindowWidth': 940,
+        # 'toolbarCanCollapse': True,
+        # 'mathJaxLib': '//cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
+        'tabSpaces': 4,
+        'extraPlugins': ','.join([
+            'uploadimage', # the upload image feature
+            # your extra plugins here
+            'div',
+            'autolink',
+            'autoembed',
+            'embedsemantic',
+            'autogrow',
+            # 'devtools',
+            'widget',
+            'lineutils',
+            'clipboard',
+            'dialog',
+            'dialogui',
+            'elementspath'
+        ]),
+    }
 }
-# CSRF_TRUSTED_ORIGINS = [
-#     "*",
-# ]
 
 
-# customColorPalette = [
-#     {"color": "hsl(4, 90%, 58%)", "label": "Red"},
-#     {"color": "hsl(340, 82%, 52%)", "label": "Pink"},
-#     {"color": "hsl(291, 64%, 42%)", "label": "Purple"},
-#     {"color": "hsl(262, 52%, 47%)", "label": "Deep Purple"},
-#     {"color": "hsl(231, 48%, 48%)", "label": "Indigo"},
-#     {"color": "hsl(207, 90%, 54%)", "label": "Blue"},
-# ]
-#
-# CKEDITOR_5_CONFIGS = {
-#     "default": {
-#         "toolbar": [
-#             "heading",
-#             "|",
-#             "bold",
-#             "italic",
-#             "link",
-#             "bulletedList",
-#             "numberedList",
-#             "blockQuote",
-#             "imageUpload"
-#         ],
-#     },
-#     "comment": {
-#         "language": {"ui": "en", "content": "en"},
-#         "toolbar": [
-#             "heading",
-#             "|",
-#             "bold",
-#             "italic",
-#             "link",
-#             "bulletedList",
-#             "numberedList",
-#             "blockQuote",
-#         ],
-#     },
-#     "extends": {
-#         "language": "en",
-#         "blockToolbar": [
-#             "paragraph",
-#             "heading1",
-#             "heading2",
-#             "heading3",
-#             "|",
-#             "bulletedList",
-#             "numberedList",
-#             "|",
-#             "blockQuote",
-#         ],
-#         "toolbar": [
-#             # "heading",
-#             # "codeBlock",
-#             # "|",
-#
-#             # "|",
-#             "bold",
-#             "italic",
-#             # "link",
-#             "underline",
-#             "strikethrough",
-#             # "code",
-#             # "subscript",
-#             # "superscript",
-#             # "highlight",
-#             "|",
-#             "bulletedList",
-#             # "numberedList",
-#             # "todoList",
-#             # "|",
-#             # "outdent",
-#             # "indent",
-#             # "|",
-#             # "blockQuote",
-#             # "insertImage",
-#             # "|",
-#             # "fontSize",
-#             # "fontFamily",
-#             # "fontColor",
-#             # "fontBackgroundColor",
-#             # "mediaEmbed",
-#             "removeFormat",
-#             # "insertTable",
-#             # "sourceEditing",
-#         ],
-#         "image": {
-#             "toolbar": [
-#                 "imageTextAlternative",
-#                 "|",
-#                 "imageStyle:alignLeft",
-#                 "imageStyle:alignRight",
-#                 "imageStyle:alignCenter",
-#                 "imageStyle:side",
-#                 "|",
-#                 "toggleImageCaption",
-#                 "|"
-#             ],
-#             "styles": [
-#                 "full",
-#                 "side",
-#                 "alignLeft",
-#                 "alignRight",
-#                 "alignCenter",
-#             ],
-#         },
-#         "table": {
-#             "contentToolbar": [
-#                 "tableColumn",
-#                 "tableRow",
-#                 "mergeTableCells",
-#                 "tableProperties",
-#                 "tableCellProperties",
-#             ],
-#             "tableProperties": {
-#                 "borderColors": customColorPalette,
-#                 "backgroundColors": customColorPalette,
-#             },
-#             "tableCellProperties": {
-#                 "borderColors": customColorPalette,
-#                 "backgroundColors": customColorPalette,
-#             },
-#         },
-#         "heading": {
-#             "options": [
-#                 {
-#                     "model": "paragraph",
-#                     "title": "Paragraph",
-#                     "class": "ck-heading_paragraph",
-#                 },
-#                 {
-#                     "model": "heading1",
-#                     "view": "h1",
-#                     "title": "Heading 1",
-#                     "class": "ck-heading_heading1",
-#                 },
-#                 {
-#                     "model": "heading2",
-#                     "view": "h2",
-#                     "title": "Heading 2",
-#                     "class": "ck-heading_heading2",
-#                 },
-#                 {
-#                     "model": "heading3",
-#                     "view": "h3",
-#                     "title": "Heading 3",
-#                     "class": "ck-heading_heading3",
-#                 },
-#             ]
-#         },
-#         "list": {
-#             "properties": {
-#                 "styles": True,
-#                 "startIndex": True,
-#                 "reversed": True,
-#             }
-#         },
-#         "htmlSupport": {
-#             "allow": [
-#                 {"name": "/.*/", "attributes": True, "classes": True, "styles": True}
-#             ]
-#         },
-#     },
-# }

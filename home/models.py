@@ -23,7 +23,7 @@ class About(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = 'О нас'
+        verbose_name = ''
         verbose_name_plural = 'О нас'
 
 
@@ -46,5 +46,23 @@ class AboutDetail(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = 'О нас'
+        verbose_name = ''
         verbose_name_plural = 'О нас'
+
+
+class Header(models.Model):
+    cat = models.CharField('Категория', max_length=255)
+
+
+    class Meta:
+        verbose_name_plural = 'Заголовка'
+
+
+class SubHeader(models.Model):
+    key = models.ForeignKey(Header, on_delete=models.CASCADE, relaeted_name='key')
+    name = models.CharField('Подкатегория', max_length=255)
+
+    class Meta:
+        verbose_name_plural='Подкатегория'
+
+

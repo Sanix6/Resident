@@ -1,201 +1,93 @@
 from rest_framework import serializers
+from ckeditor.widgets import CKEditorWidget
 from .models import *
+from googletrans import Translator
+
+translator = Translator()
 
 
 
 class SliderSerializers(serializers.ModelSerializer):
     class Meta:
         model = Slider
-        fields = ['image', 'title', 'description']
-
-
-
-
-class EstateDetailSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = EstateDetail
         fields = [
-            'slug',
-            'category',
-            'image',
+            'image', 
             'title',
-            'data',
-            'last_mod',
-            'name',
+            'description'
+            ]
+
+
+
+class ResidentDetailSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = ResidentDetail
+        fields = [
             'description'
         ]
+    
 
 
+class ResidentSerializers(serializers.ModelSerializer):
+    resident = ResidentDetailSerializers(many=True,read_only=True)
+    category_name = serializers.SerializerMethodField()
 
-class EstateSerializers(serializers.ModelSerializer):
-    estate = EstateDetailSerializers(many=True, read_only=True)
     class Meta:
-        model = Estate
+        model = Resident
         fields = [
             'slug',
-            'category',
+            'category_name',
             'image',
             'title',
             'data',
-            'last_mod',
-            'estate',
+            'lang',
+            'resident',
         ]
 
+    def get_category_name(self, obj):
+        return obj.category.name if obj.category else None
+    
 
-
-class HolidayDetailSerializers(serializers.ModelSerializer):
+class SubCategoriesListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = HolidayDetail
+        model = SubCategory
         fields = [
-            'slug',
-            'category',
-            'image',
-            'title',
-            'data',
-            'last_mod',
+            'name', 
+            ]
+
+
+class CategorySerializers(serializers.ModelSerializer):
+    state = ResidentSerializers(many=True, read_only=True)
+    key = SubCategoriesListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Category
+        fields = [
             'name',
-            'description'
+            'state',
+            'key',
         ]
 
+    def translate_category_name(self, category_name):
+        if category_name is None:
+            return None
+        translation = translator.translate(category_name, dest='en')
+        return translation.text.lower().replace(' ', '_')
+
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        translated_name = self.translate_category_name(representation['name'])
+        return {translated_name: representation['state']}
+    
 
 
 
-class HolidaySerializers(serializers.ModelSerializer):
-    holiday = HolidayDetailSerializers(many=True, read_only=True)
-    class Meta:
-        model = Holiday
-        fields = [
-            'slug',
-            'category',
-            'image',
-            'title',
-            'data',
-            'last_mod',
-            'holiday',
-        ]
+
+
+    
 
 
 
-class ProductDetailSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = ProductDetail
-        fields = [
-            'slug',
-            'category',
-            'image',
-            'title',
-            'data',
-            'last_mod',
-            'name',
-            'description'
-        ]
 
 
 
-class ProductSerializers(serializers.ModelSerializer):
-    product = ProductDetailSerializers(many=True, read_only=True)
-    class Meta:
-        model = Product
-        fields = [
-            'slug',
-            'category',
-            'image',
-            'title',
-            'data',
-            'last_mod',
-            'product',
-        ]
-
-
-
-class DesignDetailSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = DesignDetail
-        fields = [
-            'slug',
-            'category',
-            'image',
-            'title',
-            'data',
-            'last_mod',
-            'name',
-            'description'
-        ]
-
-
-
-class DesignSerializers(serializers.ModelSerializer):
-    design = DesignDetailSerializers(many=True, read_only=True)
-    class Meta:
-        model = Design
-        fields = [
-            'slug',
-            'category',
-            'image',
-            'title',
-            'data',
-            'last_mod',
-            'design',
-        ]
-
-
-class InterviewDetailSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = InterviewDetail
-        fields = [
-            'slug',
-            'category',
-            'image',
-            'title',
-            'data',
-            'last_mod',
-            'name',
-            'description'
-        ]
-
-
-class InterviewSerializers(serializers.ModelSerializer):
-    interview = InterviewDetailSerializers(many=True, read_only=True)
-    class Meta:
-        model = Interview
-        fields = [
-            'slug',
-            'category',
-            'image',
-            'title',
-            'data',
-            'last_mod',
-            'interview'
-        ]
-
-
-class PopularDetailSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = PopularDetail
-        fields = [
-            'slug',
-            'category',
-            'image',
-            'title',
-            'data',
-            'last_mod',
-            'name',
-            'description'
-        ]
-
-
-
-class PopularSerializers(serializers.ModelSerializer):
-    popular = PopularDetailSerializers(many=True, read_only=True)
-    class Meta:
-        model = Popular
-        fields = [
-            'slug',
-            'category',
-            'image',
-            'title',
-            'data',
-            'last_mod',
-            'popular',
-            
-        ]

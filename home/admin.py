@@ -12,3 +12,12 @@ class AboutAdmin(admin.ModelAdmin):
     list_display = ['title']
 
 
+class SubHeaderInline(admin.StackedInline):
+    model = SubHeader
+    extra = 0
+
+
+class HeaderAdmin(admin.ModelAdmin):
+    inlines = [SubHeader]
+    list_display = 'cat'
+

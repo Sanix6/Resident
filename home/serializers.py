@@ -26,5 +26,22 @@ class AboutSerializers(serializers.ModelSerializer):
             'img',
             'last_mood',
             'about'
+        ]
 
+
+class SubHeaderSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = SubHeader
+        fields = [
+            'name'
+        ]
+
+class HeaderSerializers(serializers.ModelSerializer):
+    key = SubHeaderSerializers(many=True, read_only=True)
+
+    class Meta:
+        model = Header
+        fields = [
+            'cat',
+            'key'
         ]
