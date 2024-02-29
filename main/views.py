@@ -42,16 +42,3 @@ class SubCategoriesListView(generics.ListAPIView):
 
 
 
-class HeaderAPIView(generics.ListAPIView):
-    queryset = Header.objects.all()
-    serializer_class = HeaderSerializers
-
-
-
-class SubHeaderAPIView(generics.RetrieveAPIView):
-    queryset = SubHeader.objects.all()
-    serializer_class = SubHeaderSerializers
-    lookup_field = 'slug'
-
-
-

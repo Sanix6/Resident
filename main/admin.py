@@ -41,11 +41,6 @@ class CategoryAdmin(admin.ModelAdmin):
     actions_on_top = False
 
 
-# class PublicationStatusInline(admin.StackedInline):
-#     model = PublicationStatus
-
-
-
 class ResidentInline(admin.StackedInline):
    model = ResidentDetail
    extra = 1
@@ -78,13 +73,3 @@ class ResidentAdmin(admin.ModelAdmin):
 
 
     change_form_template = "resident/index.html"
-
-
-
-# 
-    
-    
-
-# @admin.register(PublicationStatus)
-# class PublicationStatusAdmin(admin.ModelAdmin):
-#     list_display = ('resident', 'is_active', 'is_draft')

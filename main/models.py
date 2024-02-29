@@ -7,7 +7,6 @@ from django.urls import reverse
 from ckeditor.fields import RichTextField
 
 
-
 class Slider(models.Model):
     image = models.ImageField(_('Изображение'))
     title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
@@ -16,37 +15,6 @@ class Slider(models.Model):
     class Meta:
         verbose_name = ''
         verbose_name_plural = 'Слайдеры'
-
-
-
-class Header(models.Model):
-    title = models.CharField('Категория', max_length=255)
-
-    def __str__(self):
-        return f'{self.title}'
-
-    class Meta:
-        verbose_name_plural = 'Заголовка'
-
-
-class SubHeader(models.Model):
-    slug = models.SlugField(_('Слаг'),null=True, blank=True)
-    key = models.ForeignKey(Header, on_delete=models.CASCADE, related_name='key')
-    title = models.CharField('Подкатегория', max_length=255, null=True, blank=True)
-    
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
-        if self.title:
-            english_title = translit(self.title, 'ru', reversed=True)
-            self.slug = slugify(english_title)
-        super(SubHeader, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return f'{self.title}'
-
-    class Meta:
-        verbose_name_plural='Подкатегория'
 
 
 class Category(models.Model):
@@ -118,20 +86,6 @@ class Resident(models.Model):
         verbose_name = ''
         verbose_name_plural = 'Статья'
 
-    # def save(self, *args, **kwargs):
-    #     if self.save_state:
-    #         self.publication_status.is_active = True
-    #         self.publication_status.is_draft = False
-    #     else:
-    #         self.publication_status.is_active = False
-    #         self.publication_status.is_draft = True
-    #     super().save(*args, **kwargs)
-
-
-    # @property
-    # def publication_status(self):
-    #     return self.publication_status
-
 
 
 class ResidentDetail(models.Model):
@@ -142,21 +96,3 @@ class ResidentDetail(models.Model):
         verbose_name = 'Дополнительно'
         verbose_name_plural = 'Дополнительно'
 
-
-
-# class PublicationStatus(models.Model):
-#     resident = models.OneToOneField(Resident, on_delete=models.CASCADE, related_name='publication_status', verbose_name='Cтатус статьи')
-#     is_active = models.BooleanField(_('Опубликовано'), default=False)
-#     is_draft = models.BooleanField(_('Черновик'), default=True)
-
-#     class Meta:
-#         verbose_name_plural = 'Статус статьи'
-
-
-
-
-
-    
-class Test(models.Model):
-    title = models.CharField(max_length=255)
-    
