@@ -73,16 +73,6 @@ WSGI_APPLICATION = 'resident.wsgi.application'
 # AUTH_USER_MODEL = "users.User"
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'resident', 
-        'USER': 'navis', 
-        'PASSWORD': 'person02',
-        'HOST': 'localhost', 
-        'PORT': '',
-    },
-}
 
 JAZZMIN_SETTINGS = {
     "site_title": "Resident",
