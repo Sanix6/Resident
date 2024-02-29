@@ -50,19 +50,5 @@ class AboutDetail(models.Model):
         verbose_name_plural = 'О нас'
 
 
-class Header(models.Model):
-    cat = models.CharField('Категория', max_length=255)
-
-
-    class Meta:
-        verbose_name_plural = 'Заголовка'
-
-
-class SubHeader(models.Model):
-    key = models.ForeignKey(Header, on_delete=models.CASCADE, relaeted_name='key')
-    name = models.CharField('Подкатегория', max_length=255)
-
-    class Meta:
-        verbose_name_plural='Подкатегория'
 
 

@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from .models import *
+from main.serializers import ResidentSerializers
+from googletrans import Translator
 
+translator = Translator()
 
 class AboutDetailSerializers(serializers.ModelSerializer):
     class Meta:
@@ -28,20 +31,3 @@ class AboutSerializers(serializers.ModelSerializer):
             'about'
         ]
 
-
-class SubHeaderSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = SubHeader
-        fields = [
-            'name'
-        ]
-
-class HeaderSerializers(serializers.ModelSerializer):
-    key = SubHeaderSerializers(many=True, read_only=True)
-
-    class Meta:
-        model = Header
-        fields = [
-            'cat',
-            'key'
-        ]

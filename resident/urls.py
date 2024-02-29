@@ -8,7 +8,6 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
-    path('', include('home.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     re_path('chaining/', include('smart_selects.urls')),
 

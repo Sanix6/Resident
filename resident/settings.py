@@ -1,5 +1,9 @@
 from pathlib import Path
 import os
+from django.apps import apps
+
+# Очистка кэша метаданных Django
+apps.all_models.clear()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -11,7 +15,6 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'jazzmin',
-    'smart_selects',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -24,6 +27,8 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'django_ckeditor_5',
+    'smart_selects',
+    "django_filters",
 
 
     # apps
@@ -81,10 +86,10 @@ DATABASES = {
 
 JAZZMIN_SETTINGS = {
     "site_title": "Resident",
+    "welcome_sign": "Resident",
     "site_header": "Resident",
-    "site_brand": "Resident",
-    "SHOW_MODEL_ICONS": False, 
-    "show_ui_builder": False,
+    "site_brand": ".",
+    "show_ui_builder": True,
 
 }
 
@@ -239,3 +244,34 @@ CKEDITOR_CONFIGS = {
 }
 
 
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-success",
+    "accent": "accent-teal",
+    "navbar": "navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": False,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": False,
+    "sidebar": "sidebar-dark-info",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": False,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "cyborg",
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    },
+}

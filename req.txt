@@ -4,6 +4,7 @@ attrs==23.2.0
 certifi==2024.2.2
 chardet==3.0.4
 Django==4.2.7
+django-admin-thumbnails==0.2.8
 django-ckeditor==6.7.1
 django-ckeditor-5==0.2.11
 django-cors-headers==4.3.1

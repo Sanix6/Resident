@@ -16,12 +16,3 @@ class AboutDetailAPIView(generics.RetrieveAPIView):
     serializer_class = AboutDetailSerializers
     lookup_field = 'slug'
 
-
-class HeaderAPIView(generics.ListAPIView):
-    queryset = Header.objects.all()
-    serializer_class = HeaderSerializers
-
-
-class SubHeaderAPIView(generics.RetrieveAPIView):
-    queryset = Header.objects.all()
-    serializer_class = HeaderSerializers

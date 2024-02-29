@@ -16,6 +16,11 @@ class SliderSerializers(serializers.ModelSerializer):
             'description'
             ]
 
+# class PublicationStatusSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = PublicationStatus
+#         fields = ('is_active', 'is_draft')
+
 
 
 class ResidentDetailSerializers(serializers.ModelSerializer):
@@ -29,6 +34,7 @@ class ResidentDetailSerializers(serializers.ModelSerializer):
 
 class ResidentSerializers(serializers.ModelSerializer):
     resident = ResidentDetailSerializers(many=True,read_only=True)
+    # publication_status = PublicationStatusSerializer(read_only=True)
     category_name = serializers.SerializerMethodField()
 
     class Meta:
@@ -39,7 +45,9 @@ class ResidentSerializers(serializers.ModelSerializer):
             'image',
             'title',
             'data',
+            'save_state',
             'lang',
+            'updated_at',
             'resident',
         ]
 
@@ -47,11 +55,30 @@ class ResidentSerializers(serializers.ModelSerializer):
         return obj.category.name if obj.category else None
     
 
+    # def create(self, validated_data):
+    #     publication_status_data = validated_data.pop('publication_status')
+    #     resident = Resident.objects.create(**validated_data)
+    #     PublicationStatus.objects.create(resident=resident, **publication_status_data)
+    #     return resident
+
+    # def update(self, instance, validated_data):
+    #     publication_status_data = validated_data.pop('publication_status', {})
+    #     publication_status = instance.publication_status
+
+    #     instance = super().update(instance, validated_data)
+
+    #     publication_status.is_active = publication_status_data.get('is_active', publication_status.is_active)
+    #     publication_status.is_draft = publication_status_data.get('is_draft', publication_status.is_draft)
+    #     publication_status.save()
+
+    #     return instance
+    
+
 class SubCategoriesListSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
         fields = [
-            'name', 
+            'title', 
             ]
 
 
@@ -77,7 +104,32 @@ class CategorySerializers(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         translated_name = self.translate_category_name(representation['name'])
+
+        
         return {translated_name: representation['state']}
+
+
+class SubHeaderSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = SubHeader
+        fields = [
+            'slug',
+            'title',
+        ]
+
+
+
+class HeaderSerializers(serializers.ModelSerializer):
+    key = SubHeaderSerializers(many=True, read_only=True)
+
+    class Meta:
+        model = Header
+        fields = [
+            'id',
+            'title',
+            'key',
+
+        ]
     
 
 
