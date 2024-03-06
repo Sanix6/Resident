@@ -1,9 +1,5 @@
 from pathlib import Path
 import os
-from django.apps import apps
-
-# Очистка кэша метаданных Django
-apps.all_models.clear()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,7 +30,6 @@ INSTALLED_APPS = [
     # apps
     'users',
     'main',
-    'home',
 ]
 
 
@@ -72,7 +67,16 @@ WSGI_APPLICATION = 'resident.wsgi.application'
 
 # AUTH_USER_MODEL = "users.User"
 
-
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': "resident", 
+        'USER': "navis", 
+        'PASSWORD': 'person02',
+        'HOST': os.getenv("HOST"), 
+        'PORT': os.getenv("PORT"),
+    }
+}
 
 JAZZMIN_SETTINGS = {
     "site_title": "Resident",
@@ -80,7 +84,15 @@ JAZZMIN_SETTINGS = {
     "site_header": "Resident",
     "site_brand": ".",
     "show_ui_builder": True,
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "users.user": "fas fa-users-cog",
+        "main.slider": "fas fa-desktop",
+        "main.category": "fas fa-copy",
+        "main.resident": "fas fa-pencil-alt"
+        
 
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -102,16 +114,13 @@ AUTH_PASSWORD_VALIDATORS = [
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://resident-kg.vercel.app",
-]
-
-
 
 CORS_ALLOWED_ORIGINS = [
     "https://resident-kg.vercel.app",
     "http://localhost:3000",
     "http://localhost:3001",
+    "https://resident.kg",
+
 ]
 
 
@@ -128,11 +137,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = "django_static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "django_static/")
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -152,6 +161,10 @@ CORS_ALLOW_METHODS = (
     "PUT",
 )
 
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://resident.kg",
+]
 
 NIKITA_LOGIN = os.getenv("NITKITA_LOGIN")
 NIKITA_PASSWORD = os.getenv("NITKITA_PASSWORD")

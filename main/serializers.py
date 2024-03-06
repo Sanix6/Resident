@@ -8,6 +8,8 @@ translator = Translator()
 
 
 class SliderSerializers(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = Slider
         fields = [
@@ -16,6 +18,9 @@ class SliderSerializers(serializers.ModelSerializer):
             'description'
             ]
 
+    def get_image(self, obj):
+        if obj.image:
+            return f"https://resident.kg{obj.image.url}"
 
 
 class ResidentDetailSerializers(serializers.ModelSerializer):
@@ -40,34 +45,25 @@ class ResidentSerializers(serializers.ModelSerializer):
             'title',
             'data',
             'save_state',
-            'lang',
+            'views',
             'updated_at',
             'resident',
         ]
 
     def get_category_name(self, obj):
-        return obj.category.name if obj.category else None
-    
-
-class SubCategoriesListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SubCategory
-        fields = [
-            'title', 
-            ]
+        return obj.header.name if obj.header else None
+        
 
 
 class CategorySerializers(serializers.ModelSerializer):
     state = ResidentSerializers(many=True, read_only=True)
-    key = SubCategoriesListSerializer(many=True, read_only=True)
-
     class Meta:
         model = Category
-        fields = [
+        fields = (
+            'slug',
             'name',
             'state',
-            'key',
-        ]
+        )
 
     def translate_category_name(self, category_name):
         if category_name is None:
@@ -79,21 +75,29 @@ class CategorySerializers(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         translated_name = self.translate_category_name(representation['name'])
-
-        
         return {translated_name: representation['state']}
 
-
     
 
+class SubHeaderSerializers(serializers.ModelSerializer):
+    resident = ResidentSerializers(many=True, read_only=True)
+    class Meta:
+        model = SubHeader
+        fields = [
+            'title',
+            'slug',
+            'resident'
+            ]
+        
 
-
-
-
-    
-
-
-
-
-
-
+class CategoryListSerializers(serializers.ModelSerializer):
+    header = SubHeaderSerializers(many=True, read_only=True)
+    class Meta:
+        model = Category
+        fields = [
+            'name',
+            'slug',
+            'is_active',
+            'header',
+            
+        ]

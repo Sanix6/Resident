@@ -5,12 +5,21 @@ from smart_selects.db_fields import ChainedForeignKey
 from transliterate import translit
 from django.urls import reverse
 from ckeditor.fields import RichTextField
+from django.template.defaultfilters import slugify as default_slugify
+import uuid
+
+LANG_CHOICES = (
+        ("kg","Кыргыз тили"),
+        ("ru","Русский язык")
+    )
 
 
 class Slider(models.Model):
-    image = models.ImageField(_('Изображение'))
-    title = models.CharField(_('Название'), max_length=255, null=True, blank=True)
-    description = models.CharField(_("Текст"), max_length=255, null=True, blank=True)
+    language = models.CharField('Язык', choices=LANG_CHOICES, default=('ru'), max_length=255, null=True, blank=True)
+    image = models.ImageField('Изображение')
+    title = models.CharField('Название', max_length=255, null=True, blank=True)
+    description = models.CharField("Текст", max_length=255, null=True, blank=True)
+    
 
     class Meta:
         verbose_name = ''
@@ -18,55 +27,71 @@ class Slider(models.Model):
 
 
 class Category(models.Model):
+    language = models.CharField('Язык', choices=LANG_CHOICES, default=('ru'), max_length=255, null=True, blank=True)
+    slug = models.SlugField('Слаг', blank=True, null=True)
     name = models.CharField("Название", max_length=255, null=True, blank=True)
+    is_active = models.BooleanField('Активно')
+    
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        english_title = translit(self.name, 'ru', reversed=True)
+        if english_title is not None:
+            self.slug = slugify(english_title)
+        super(Category, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.name}'
+            return f'{self.name}'
+
+    class Meta:
+            verbose_name = ''
+            verbose_name_plural = 'Категория'
+
+
+class SubHeader(models.Model):
+    language = models.CharField('Язык', choices=LANG_CHOICES, default=('ru'), max_length=255, null=True, blank=True)
+    header = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Шапка', related_name='header')
+    slug = models.SlugField('Слаг', blank=True, null=True)
+    title = models.CharField("Название", max_length=255, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        english_title = translit(self.title, 'ru', reversed=True)
+        if english_title is not None:
+            self.slug = slugify(english_title)
+        super(SubHeader, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return  f'{self.title}'
+
 
     class Meta:
         verbose_name = ''
-        verbose_name_plural = 'Категория'
-
-
-class SubCategory(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="key", verbose_name="Категория")
-    slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
-    title = models.CharField('Подкатегории', max_length=100)
-    
-    def __str__(self):
-        return  f'{self.title}'
-    
-
-
-    class Meta:
         verbose_name_plural = 'Подкатегория'
 
 
 class Resident(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='state', verbose_name='категория')
+    language = models.CharField('Язык', choices=LANG_CHOICES, default=('ru'), max_length=255, null=True, blank=True)
+    header = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='state', verbose_name='категория')
     name = ChainedForeignKey(
-        SubCategory,
-        chained_field='category',
-        chained_model_field='category',
+        SubHeader,
+        chained_field='header',
+        chained_model_field='header',
         show_all=False,
         auto_choose=True,
         sort=True,
+        related_name='resident',
         on_delete=models.CASCADE,
-        null=True,
-        blank=True
+        verbose_name='Подкатегория', 
+        null=True, blank=True
     )
-    slug = models.SlugField(_('Слаг'), unique=True, null=True, blank=True)
-    image = models.ImageField(_('Изображение'))
+    slug = models.SlugField('Слаг', max_length=1000,unique=True, null=True, blank=True)
+    image = models.ImageField('Изображение')
     title = models.CharField('Название', max_length=255, null=True, blank=True)
-    LANG_CHOICES = (
-        ("Кыргыз тили","Кыргыз тили"),
-        ("Русский язык","Русский язык")
-    )
-    lang = models.CharField('Язык', choices=LANG_CHOICES, max_length=2555, null=True, blank=True)
-    data = models.DateField(_('Дата добавление'), null=True, blank=True)
+    views = models.PositiveIntegerField('Просмотры', default=0)
+    data = models.DateField('Дата добавление', null=True, blank=True)
     updated_at = models.DateTimeField('Дата обновление', auto_now=True)
-    last_mod = models.DateTimeField(_('Последняя модификация'), auto_now=True)
-    save_state = models.BooleanField(_('Сохранить'), default=False)
+    last_mod = models.DateTimeField('Последняя модификация', auto_now=True)
+    save_state = models.BooleanField('Опубликовано', default=False)
 
 
     def save(self, *args, **kwargs):
@@ -79,18 +104,15 @@ class Resident(models.Model):
     def __str__(self):
         return  f'{self.title}'
 
-    def get_absolute_url(self):
-        return reverse('resident_detail', kwargs={'slug': self.slug})
-
     class Meta:
         verbose_name = ''
-        verbose_name_plural = 'Статья'
+        verbose_name_plural = 'Журнал'
 
 
 
 class ResidentDetail(models.Model):
     key = models.ForeignKey(Resident, on_delete=models.CASCADE, related_name='resident')
-    description = RichTextField(_('Text'), config_name='default',  null=True, blank=True)
+    description = RichTextField('Text', config_name='default',  null=True, blank=True)
 
     class Meta:
         verbose_name = 'Дополнительно'

@@ -16,10 +16,22 @@ admin.site.unregister(User)
 
 
 @admin.register(Slider)
+# @admin_thumbnails.thumbnail('image')
 class SliderAdmin(admin.ModelAdmin):
     list_display = ['title', "get_html_image"]
-
     actions_on_top = False
+
+
+    # def save_model(self, request, obj, form, change):
+    #     if obj.image:
+    #         img = Image.open(obj.image)
+    #         max_size = (460, 460)
+    #         img.thumbnail(max_size)
+    #         thumb_io = BytesIO()
+    #         img.save(thumb_io, format='PNG', quality=100)
+    #         thumb_file = InMemoryUploadedFile(thumb_io, None, 'thumb.jpg', 'image/jpeg', sys.getsizeof(thumb_io), None)
+    #         obj.image = thumb_file
+    #     super().save_model(request, obj, form, change)
 
     def get_html_image(self, object):
         if object.image:
@@ -28,15 +40,15 @@ class SliderAdmin(admin.ModelAdmin):
     get_html_image.short_description = "Изображение"
 
 
-class SubCategoryInline(admin.StackedInline):
-    model = SubCategory
-    extra = 0
+class SubHeaderInline(admin.StackedInline):
+    model = SubHeader
+    extra = 1
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    inlines = [SubCategoryInline]
-    list_display = ['name']
+    inlines = [SubHeaderInline]
+    list_display = ['name',]
 
     actions_on_top = False
 
@@ -51,17 +63,16 @@ class ResidentInline(admin.StackedInline):
 @admin_thumbnails.thumbnail('image')
 class ResidentAdmin(admin.ModelAdmin):
     inlines = [ResidentInline]
-    list_display = ('title', 'get_html_image','category', 'lang', 'data', 'updated_at')
+    list_display = ('title', 'get_html_image', 'header', 'data', 'updated_at', 'views',  'save_state')
 
-    
 
     def save_model(self, request, obj, form, change):
         if obj.image:
             img = Image.open(obj.image)
-            max_size = (100, 100)
+            max_size = (460, 460)
             img.thumbnail(max_size)
             thumb_io = BytesIO()
-            img.save(thumb_io, format='PNG', quality=85)
+            img.save(thumb_io, format='PNG', quality=100)
             thumb_file = InMemoryUploadedFile(thumb_io, None, 'thumb.jpg', 'image/jpeg', sys.getsizeof(thumb_io), None)
             obj.image = thumb_file
         super().save_model(request, obj, form, change)
@@ -71,5 +82,8 @@ class ResidentAdmin(admin.ModelAdmin):
             return mark_safe(f'<img src="{obj.image.url}" style="max-height: 100px; max-width: 100px;" />')
         return None
 
+    
+    get_html_image.short_description = 'Изображение'
 
-    change_form_template = "resident/index.html"
+
+    
