@@ -1,20 +1,15 @@
-from smart_selects.form_fields import ChainedModelChoiceField
 from .models import *
-from django import forms
+import os
+from urllib.parse import urljoin
+
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 
 
-class ResidentForm(forms.ModelForm):
-    subcategory = ChainedModelChoiceField(
-        queryset='Resident.objects.all()',
-        chained_field='category',
-        chained_model_field='category',
-        show_all=False,
-        auto_choose=True
-    )
+class CustomStorage(FileSystemStorage):
+    """Custom storage for django_ckeditor_5 images."""
 
-    class Meta:
-        model = Resident
-        fields = ['category', 'subcategory', 'name']
-
+    location = os.path.join(settings.MEDIA_ROOT, "django_ckeditor_5")
+    base_url = urljoin(settings.MEDIA_URL, "django_ckeditor_5/")
 
 

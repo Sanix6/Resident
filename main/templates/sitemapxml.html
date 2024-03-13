@@ -12,14 +12,14 @@
 
    </url>
 
-   {% for residents in resident %}
+   {% for posts in post %}
    <url>
 
-      <loc>https://resident.kg/news/{{ residents.slug }}{{residents.id}}</loc>
+      <loc>https://resident.kg/news/{{ posts.slug }}{{posts.id}}</loc>
 
       <changefreq>daily</changefreq>
 
-      <lastmod>{{ residents.last_mod|date:"c" }}</lastmod>
+      <lastmod>{{ posts.updated_at|date:"c" }}</lastmod>
 
       <priority>1.0</priority>
 

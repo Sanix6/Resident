@@ -6,17 +6,19 @@ from django.conf import settings
 from django.contrib.sitemaps import GenericSitemap
 from django.contrib.sitemaps.views import sitemap
 from main.models import *
+from ckeditor_uploader import views as ckeditor_views
+
 
 info_dict = {
-    "queryset": Resident.objects.all(),
+    "queryset": Post.objects.all(),
     "date_field": "pub_date",
 }
 
 urlpatterns = [
     path('api/admin/', admin.site.urls),
     path('api/', include('main.urls')),
-    # path('api/', include('users.urls')),
-    path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('api/ckeditor/', include('ckeditor_uploader.urls')),
+    path('ckeditor/browse/', ckeditor_views.browse, name='ckeditor_browse'),
     re_path('api/chaining/', include('smart_selects.urls')),
     path(
         "api/sitemap.xml",
@@ -28,4 +30,3 @@ urlpatterns = [
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += yasg_url
-

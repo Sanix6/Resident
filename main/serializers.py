@@ -1,103 +1,116 @@
 from rest_framework import serializers
-from ckeditor.widgets import CKEditorWidget
 from .models import *
 from googletrans import Translator
+from django.contrib.auth.models import User
+import locale
+locale.setlocale(category=locale.LC_ALL)
+
 
 translator = Translator()
 
 
-
-class SliderSerializers(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
+class SliderSerializer(serializers.ModelSerializer):
+    img = serializers.SerializerMethodField()
 
     class Meta:
         model = Slider
-        fields = [
-            'image', 
-            'title',
-            'description'
-            ]
+        fields = ['img', 'title', 'description']
 
-    def get_image(self, obj):
-        if obj.image:
-            return f"https://resident.kg{obj.image.url}"
+    def get_img(self, obj):
+        if obj.img:
+            return f"https://resident.kg{obj.img.url}"
 
 
-class ResidentDetailSerializers(serializers.ModelSerializer):
+class PostDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ResidentDetail
+        model = PostDetail
         fields = [
             'description'
         ]
+
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Comments
+        fields = ['post', 'user', 'comment', 'created_at']
+
+        def create(self, validated_data):
+            return Comments.objetcs.created(**validated_data)
+
+
+
+class PostSerializer(serializers.ModelSerializer):
+    comment = CommentSerializer(many=True)
+    detail = PostDetailSerializer(many=True,read_only=True)
+    cat_title = serializers.SerializerMethodField()
+    img = serializers.SerializerMethodField()
+    views = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format='%H:%M %d.%m.%Y')
+    updated_at = serializers.DateTimeField(format='%H:%M %d.%m.%Y')
+    user = serializers.SerializerMethodField()
     
 
-
-class ResidentSerializers(serializers.ModelSerializer):
-    resident = ResidentDetailSerializers(many=True,read_only=True)
-    category_name = serializers.SerializerMethodField()
-
+    def get_user(self, obj):
+        if obj.user:
+            return f'{obj.user.last_name} {obj.user.first_name}'
+        return None
+    
     class Meta:
-        model = Resident
-        fields = [
-            'slug',
-            'category_name',
-            'image',
-            'title',
-            'data',
-            'save_state',
-            'views',
-            'updated_at',
-            'resident',
-        ]
+        model = Post
+        fields = ['id', 'user', 'slug', 'cat_title', 'cat', 'is_save', 'is_main','sub_cat', 'title', 'img', 'is_active', 'created_at', 'updated_at', 'views', 'comment',  'detail']
 
-    def get_category_name(self, obj):
-        return obj.header.name if obj.header else None
+    def get_img(self, obj): 
+        if obj.img:
+            return f"https://resident.kg{obj.img.url}"
         
+    def get_cat_title(self, obj):
+        if obj.cat:
+            return obj.cat.title
 
-
-class CategorySerializers(serializers.ModelSerializer):
-    state = ResidentSerializers(many=True, read_only=True)
-    class Meta:
-        model = Category
-        fields = (
-            'slug',
-            'name',
-            'state',
-        )
-
-    def translate_category_name(self, category_name):
-        if category_name is None:
-            return None
-        translation = translator.translate(category_name, dest='en')
-        return translation.text.lower().replace(' ', '_')
-
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        translated_name = self.translate_category_name(representation['name'])
-        return {translated_name: representation['state']}
+    def get_views(self, obj):
+        a = obj.views
+        if a >= 10000 and a < 1000000:
+            return f'{int(a/1000)}к'
+        
+        if a >= 1000000:
+            return f'{int(a/1000000)}млн'
+        return a
 
     
-
-class SubHeaderSerializers(serializers.ModelSerializer):
-    resident = ResidentSerializers(many=True, read_only=True)
+class SubCatHeader(serializers.ModelSerializer):
     class Meta:
-        model = SubHeader
+        model = SubCategory
         fields = [
             'title',
             'slug',
-            'resident'
             ]
         
 
-class CategoryListSerializers(serializers.ModelSerializer):
-    header = SubHeaderSerializers(many=True, read_only=True)
+class CatHeaderSerializer(serializers.ModelSerializer):
+    subcategory = SubCatHeader(many=True, read_only=True)
+    status = serializers.SerializerMethodField()
+
     class Meta:
         model = Category
         fields = [
-            'name',
+            'status',
+            'title',
             'slug',
             'is_active',
-            'header',
+            'subcategory',
             
         ]
+
+    def get_status(self, obj):
+        if obj.subcategory.first():
+            return False
+        else:
+            True
+
+    
+
+
+
+    

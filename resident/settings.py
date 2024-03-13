@@ -22,13 +22,12 @@ INSTALLED_APPS = [
     'drf_yasg',
     'ckeditor',
     'ckeditor_uploader',
-    'django_ckeditor_5',
     'smart_selects',
     "django_filters",
+    'admin_extra_buttons',
 
 
     # apps
-    'users',
     'main',
 ]
 
@@ -65,7 +64,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'resident.wsgi.application'
 
-# AUTH_USER_MODEL = "users.User"
 
 DATABASES = {
     'default': {
@@ -87,11 +85,11 @@ JAZZMIN_SETTINGS = {
     "icons": {
         "auth": "fas fa-users-cog",
         "users.user": "fas fa-users-cog",
+        "users.user": "fas fa-fish",
         "main.slider": "fas fa-desktop",
         "main.category": "fas fa-copy",
-        "main.resident": "fas fa-pencil-alt"
-        
-
+        "main.post": "fas fa-pencil-alt",
+        "main.comments": "fas fa-comment",
     }
 }
 
@@ -111,8 +109,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 ]
 
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
 
 
 CORS_ALLOWED_ORIGINS = [
@@ -120,7 +116,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
     "https://resident.kg",
-
+    
 ]
 
 
@@ -172,11 +168,11 @@ NIKITA_SENDER = os.getenv("NITKITA_SENDER")
 RESIDENT_NUMBER = os.getenv("RESIDENT_NUMBER")
 
 
-
+AUTH_USER_MODEL = 'auth.User'
 CKEDITOR_UPLOAD_PATH = 'uploads/'
 
 
-CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
+CKEDITOR_BASEPATH = "/django_static/ckeditor/ckeditor/"
 
 
 CKEDITOR_CONFIGS = {
@@ -215,6 +211,7 @@ CKEDITOR_CONFIGS = {
                 # put the name of your editor.ui.addButton here
                 'Preview',
                 'Maximize',
+                'Youtube',
 
             ]},
         ],
@@ -241,7 +238,8 @@ CKEDITOR_CONFIGS = {
             'clipboard',
             'dialog',
             'dialogui',
-            'elementspath'
+            'elementspath',
+            'youtube'
         ]),
     }
 }

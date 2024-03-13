@@ -12,7 +12,7 @@ class SitemapView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
-        context["resident"] = Resident.objects.order_by("last_mod")
+        context["post"] = Post.objects.order_by("updated_at")
         return context
 
         
