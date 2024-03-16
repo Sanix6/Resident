@@ -1,37 +1,27 @@
 from django.contrib import admin
-from django.http import HttpRequest
 from .models import *
 from django.utils.safestring import mark_safe
 import admin_thumbnails
-from django.contrib.auth.models import Group, User
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from io import BytesIO
 import sys
 from PIL import Image
 from django.utils.html import format_html
-from django.contrib.auth.models import User
-from django.urls import path
-from django.http import HttpResponse
-from django.shortcuts import redirect
-from admin_extra_buttons.api import button
-from admin_extra_buttons.utils import HttpResponseRedirectToReferrer
 from django.template.defaultfilters import truncatechars
-
-# admin.site.unregister(Group)
-# admin.site.unregister(User)
-
 
 
 @admin.register(Slider)
 class SliderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', "language", "get_html_img"]
+    list_display = ['id', 'get_html_image', 'title', "language", ]
     list_display_links = list_display
 
-    def get_html_img(self, object):
-        if object.img:
-            return mark_safe(f"<img src='{object.img.url}' height='60'>")
+    def get_html_image(self, obj):
+        if obj.img:
+            return format_html('<a href="{}" target="_blank"><img src="{}" style="max-height: 100px; max-width: 100px; border-radius: 10px;" /></a>', obj.img.url, obj.img.url)
+        return None
 
-    get_html_img.short_description = "Изображение"
+    
+    get_html_image.short_description = 'Изображение'
 
 
 class SubCategoryInline(admin.StackedInline):
@@ -45,16 +35,30 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ['id', 'title', 'language', 'is_active']
     list_display_links = ['id', 'title']
 
+class PostSliderInline(admin.StackedInline):
+    model = PostSlider
+    extra = 1
+
 
 class PostDetailInline(admin.StackedInline):
    model = PostDetail
    extra = 1
+
+class PostFileInline(admin.StackedInline):
+    model = PostFile
+    extra = 1
    
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    model = Tag
+    list_display = ('tag',)
+
 @admin.register(Post)
 @admin_thumbnails.thumbnail('img')
 class PostAdmin(admin.ModelAdmin):
-    inlines = [PostDetailInline]
-    list_display = ('id', 'title', 'cat', 'is_active', 'get_html_image','created_at', 'updated_at',)
+    inlines = [PostDetailInline, PostSliderInline, PostFileInline]
+    list_display = ('id', 'get_html_image', 'title', 'cat', 'is_active', 'created_at', 'updated_at',)
     list_display_links = ('id', 'title', 'cat')
     search_fields = ['title', 'cat__title', 'sub_cat__title']
 
@@ -66,7 +70,7 @@ class PostAdmin(admin.ModelAdmin):
     def save_model_img(self, request, obj, form, change):
         if obj.img:
             img = Image.open(obj.img)
-            max_size = (750, 750)
+            max_size = (850, 850)
             img.thumbnail(max_size)
             thumb_io = BytesIO()
             img.save(thumb_io, format='PNG', quality=100)
@@ -76,7 +80,7 @@ class PostAdmin(admin.ModelAdmin):
 
     def get_html_image(self, obj):
         if obj.img:
-            return mark_safe(f'<img src="{obj.img.url}" style="max-height: 100px; max-width: 100px;" />')
+            return format_html('<a href="{}" target="_blank"><img src="{}" style="max-height: 100px; max-width: 100px; border-radius: 10px;" /></a>', obj.img.url, obj.img.url)
         return None
 
     

@@ -44,6 +44,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'resident.urls'
 
 TEMPLATES = [
@@ -121,10 +122,6 @@ CORS_ALLOWED_ORIGINS = [
 
 
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-]
-
 LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'Asia/Bishkek'
@@ -149,11 +146,11 @@ CORS_ALLOW_ALL_HEADERS = True
 
 
 CORS_ALLOW_METHODS = (
+    "POST",
     "DELETE",
     "GET",
     "OPTIONS",
     "PATCH",
-    "POST",
     "PUT",
 )
 
@@ -168,7 +165,6 @@ NIKITA_SENDER = os.getenv("NITKITA_SENDER")
 RESIDENT_NUMBER = os.getenv("RESIDENT_NUMBER")
 
 
-AUTH_USER_MODEL = 'auth.User'
 CKEDITOR_UPLOAD_PATH = 'uploads/'
 
 
@@ -242,37 +238,4 @@ CKEDITOR_CONFIGS = {
             'youtube'
         ]),
     }
-}
-
-
-JAZZMIN_UI_TWEAKS = {
-    "navbar_small_text": False,
-    "footer_small_text": False,
-    "body_small_text": False,
-    "brand_small_text": False,
-    "brand_colour": "navbar-success",
-    "accent": "accent-teal",
-    "navbar": "navbar-dark",
-    "no_navbar_border": False,
-    "navbar_fixed": False,
-    "layout_boxed": False,
-    "footer_fixed": False,
-    "sidebar_fixed": False,
-    "sidebar": "sidebar-dark-info",
-    "sidebar_nav_small_text": False,
-    "sidebar_disable_expand": False,
-    "sidebar_nav_child_indent": False,
-    "sidebar_nav_compact_style": False,
-    "sidebar_nav_legacy_style": False,
-    "sidebar_nav_flat_style": False,
-    "theme": "cyborg",
-    "dark_mode_theme": None,
-    "button_classes": {
-        "primary": "btn-primary",
-        "secondary": "btn-secondary",
-        "info": "btn-info",
-        "warning": "btn-warning",
-        "danger": "btn-danger",
-        "success": "btn-success",
-    },
 }

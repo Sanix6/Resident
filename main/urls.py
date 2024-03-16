@@ -11,6 +11,9 @@ urlpatterns = [
     path('<str:lang>/header', HeaderView.as_view(), name='header-param'),
     path('<str:lang>/<str:cat_slug>', InCatView.as_view(), name='cat-detail'),
     path('comment/', CommentView.as_view(), name='comment'),
+    path('slider/<str:slug>/', PostSliderView.as_view(),),
+    path('file/<str:slug>/', PostFileView.as_view()),
+    
     
     #sitemap
     path("sitemap.xml", SitemapView.as_view(), name="sitemap")

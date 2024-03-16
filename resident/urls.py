@@ -21,7 +21,7 @@ urlpatterns = [
     path('ckeditor/browse/', ckeditor_views.browse, name='ckeditor_browse'),
     re_path('api/chaining/', include('smart_selects.urls')),
     path(
-        "api/sitemap.xml",
+        "sitemap.xml",
         sitemap,
         {"sitemaps": {"blog": GenericSitemap(info_dict, priority=1.0)}},
         name="django.contrib.sitemaps.views.sitesmap",
