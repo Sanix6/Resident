@@ -14,11 +14,13 @@ class SliderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Slider
-        fields = ['img', 'title', 'description']
+        fields = ['img', 'title', 'url', 'description']
 
     def get_img(self, obj):
         if obj.img:
             return f"https://resident.kg{obj.img.url}"
+
+
 
 class PostSliderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,8 +34,9 @@ class PostDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostDetail
         fields = [
-            'description'
+            'description',
         ]
+
 
 class PostFileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,16 +50,11 @@ class PostFileSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer): 
     class Meta:
         model = Comments
-        fields = ['post', 'user', 'comment', 'created_at']
+        fields = ['post', 'user', 'comment', 'created_at', 'is_active']
 
-        def create(self, validated_data):
-            return Comments.objetcs.created(**validated_data)
+    def create(self, validated_data):
+        return Comments.objects.create(**validated_data)
 
-
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = ['tag', 'slug']
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -70,23 +68,25 @@ class PostSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format='%H:%M %d.%m.%Y')
     updated_at = serializers.DateTimeField(format='%H:%M %d.%m.%Y')
     user = serializers.SerializerMethodField()
-    tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True)
-    
+
 
     def get_user(self, obj):
         if obj.user:
             return f'{obj.user.last_name} {obj.user.first_name}'
         return None
     
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if not representation['exception']:
+            representation['exception'] = None
+        return representation
+
     class Meta:
         model = Post
-        fields = ['id', 'user', 'slug', 'cat_title', 'cat', 'is_save', 'is_main','sub_cat', 'title', 'img', 'tags','is_active', 'created_at', 'updated_at','slider', 'exception', 'views', 'comment',  'detail']
+        fields = ['id', 'user', 'slug', 'cat_title', 'cat', 'is_save', 'is_main',
+                  'sub_cat', 'title', 'img', 'tags','is_active', 'created_at', 
+                  'updated_at','slider', 'exception', 'views', 'comment',  'detail']
     
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        serialized_tags = TagSerializer(instance.tags, many=True).data
-        data['tags'] = serialized_tags
-        return data
 
     def get_img(self, obj): 
         if obj.img:
@@ -127,8 +127,7 @@ class CatHeaderSerializer(serializers.ModelSerializer):
             'title',
             'slug',
             'is_active',
-            'subcategory',
-            
+            'subcategory', 
         ]
 
     def get_status(self, obj):

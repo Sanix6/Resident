@@ -49,11 +49,6 @@ class PostFileInline(admin.StackedInline):
     extra = 1
    
 
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
-    model = Tag
-    list_display = ('tag',)
-
 @admin.register(Post)
 @admin_thumbnails.thumbnail('img')
 class PostAdmin(admin.ModelAdmin):
@@ -89,7 +84,7 @@ class PostAdmin(admin.ModelAdmin):
 
 @admin.register(Comments)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ['get_image', 'post', 'formatted_name', 'is_comment', 'is_active', 'created_at']
+    list_display = ['post', 'formatted_name', 'is_comment', 'is_active', 'created_at']
     readonly_fields = ['user', ]
     list_editable = ['is_active']
     list_display_links = ['post']

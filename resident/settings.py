@@ -47,6 +47,16 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'resident.urls'
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'main.paginations.CategoryPagination',
+}
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

@@ -1,1 +1,6 @@
 /vendor/
+.idea
+django_static
+req.txt
+resident.sql
+.env
