@@ -10,24 +10,28 @@ translator = Translator()
 
 
 class SliderSerializer(serializers.ModelSerializer):
-    img = serializers.SerializerMethodField()
+   # img = serializers.SerializerMethodField()
 
     class Meta:
         model = Slider
         fields = ['img', 'title', 'url', 'description']
 
-    def get_img(self, obj):
-        if obj.img:
-            return f"https://resident.kg{obj.img.url}"
+  #  def get_img(self, obj):
+ #       if obj.img:
+#            return f"https://resident.kg{obj.img.url}"
 
 
 
 class PostSliderSerializer(serializers.ModelSerializer):
+    #image = serializers.SerializerMethodField()
     class Meta:
         model = PostSlider
         fields = [
             'image'
         ]
+
+   # def get_image(self, obj):
+     #   return f"https://resident.kg{obj.image.url}"
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
@@ -39,11 +43,16 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
 
 class PostFileSerializer(serializers.ModelSerializer):
+    file = serializers.SerializerMethodField()
+
     class Meta:
         model = PostFile
         fields = [
             'title', 'file'
         ]
+
+    def get_file(self, obj):
+        return f"https://resident.kg{obj.file.url}"
 
 
 
@@ -63,7 +72,7 @@ class PostSerializer(serializers.ModelSerializer):
     slider = PostSliderSerializer(many=True, read_only=True)
     exception = PostFileSerializer(many=True, read_only=True)
     cat_title = serializers.SerializerMethodField()
-    img = serializers.SerializerMethodField()
+    #img = serializers.SerializerMethodField()
     views = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(format='%H:%M %d.%m.%Y')
     updated_at = serializers.DateTimeField(format='%H:%M %d.%m.%Y')
@@ -88,9 +97,9 @@ class PostSerializer(serializers.ModelSerializer):
                   'updated_at','slider', 'exception', 'views', 'comment',  'detail']
     
 
-    def get_img(self, obj): 
-        if obj.img:
-            return f"https://resident.kg{obj.img.url}"
+#    def get_img(self, obj): 
+#        if obj.img:
+#            return f"https://resident.kg{obj.img.url}"
         
     def get_cat_title(self, obj):
         if obj.cat:
