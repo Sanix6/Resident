@@ -183,6 +183,8 @@ CKEDITOR_UPLOAD_PATH = 'uploads/'
 CKEDITOR_BASEPATH = "/django_static/ckeditor/ckeditor/"
 
 
+
+
 CKEDITOR_CONFIGS = {
     'default': {
         "height": 400,
