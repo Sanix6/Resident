@@ -55,7 +55,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
 
     ],
-    'DEFAULT_PAGINATION_CLASS': 'main.paginations.CategoryPagination',
 }
 
 
@@ -103,6 +102,7 @@ JAZZMIN_SETTINGS = {
         "main.category": "fas fa-copy",
         "main.post": "fas fa-pencil-alt",
         "main.comments": "fas fa-comment",
+        "main.status": "fas fa-check-circle"
     }
 }
 
@@ -122,17 +122,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 ]
 
-
-
 CORS_ALLOWED_ORIGINS = [
     "https://resident-kg.vercel.app",
     "http://localhost:3000",
     "http://localhost:3001",
-    "https://resident.kg",
-    
+    "https://resident.kg", 
+
 ]
-
-
 
 LANGUAGE_CODE = 'ru'
 
@@ -179,6 +175,7 @@ RESIDENT_NUMBER = os.getenv("RESIDENT_NUMBER")
 
 CKEDITOR_UPLOAD_PATH = 'uploads/'
 
+# FORCE_SCRIPT_NAME = '/api'
 
 CKEDITOR_BASEPATH = "/django_static/ckeditor/ckeditor/"
 

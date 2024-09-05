@@ -4,7 +4,6 @@ from .views import *
 
 
 urlpatterns = [
-    path('<str:lang>/list/slider/', SliderView.as_view(), name='slider'),
     path('post/<str:slug>/', PostDetailView.as_view(), name='post-detail'),
     path('<str:lang>/sub-cat/<str:slug>/', SubCatDataView.as_view(), name='sub-cat-data'),
     path('<str:lang>/list', PostView.as_view(), name='post-list'),  # Search
@@ -13,6 +12,8 @@ urlpatterns = [
     path('comment/', CommentView.as_view(), name='comment'),
     path('slider/<str:slug>/', PostSliderView.as_view(),),
     path('file/<str:slug>/', PostFileView.as_view()),
+    path('<str:lang>/list/status', StatusView.as_view(), name='status'),
+    path('baner', BannerView.as_view(), name='baner'),
     
     
     #sitemap

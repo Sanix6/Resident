@@ -1,28 +1,24 @@
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
+from googletrans import Translator
+
 # DRF
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from rest_framework import status
+from rest_framework.exceptions import NotFound
+import random
+from collections import defaultdict
+
 # Proj
 from .models import *
 from .serializers import *
 from .paginations import CategoryPagination
+from .forms import *
 
-
-class SliderView(generics.ListAPIView):
-    serializer_class = SliderSerializer
-
-    def get(self, request, *args, **kwargs):
-        model = Slider.objects.filter(language=self.kwargs["lang"])
-        serializer = self.serializer_class(model, many=True)
-        return Response(serializer.data)
 
 
 class SubCatDataView(generics.ListAPIView):
@@ -55,7 +51,6 @@ class PostDetailView(APIView):
         except Post.DoesNotExist:
             return Response({'error': 'Post is not found'}, status=status.HTTP_404_NOT_FOUND)      
 
-
 class PostView(APIView):
     filter_backends = [SearchFilter]
     search_fields = ['title', 'sub_cat']
@@ -63,10 +58,9 @@ class PostView(APIView):
     def get(self, request, *args, **kwargs):
         try:
             lang = self.kwargs["lang"]
-            
             categories = Category.objects.filter(language=lang)
-            print(categories)
             response = {}
+
             title_mapping = {
                 "Популярные": "Popularnye",
                 "Недвижимость": "Nedvizhimost",
@@ -81,19 +75,30 @@ class PostView(APIView):
                 "Популярдуу": "Popularnye",
                 "Продукттар": 'Products'
             }
+
+            translator = Translator()
+
             for cat in categories:
                 if lang == 'kg':
                     cat_name = title_mapping.get(cat.title, cat.slug.replace('-', '_'))
                 else:
-                    cat_name = title_mapping.get(cat.title, cat.title) 
+                    if cat.title in title_mapping:
+                        cat_name = title_mapping[cat.title]
+                    else:
+                        translated = translator.translate(cat.title, src='ru', dest='en')
+                        cat_name = translated.text.replace(' ', '_')
+
                 model = Post.objects.filter(cat=cat, language=lang)
                 serialized_post = PostSerializer(model, many=True).data
                 response[cat_name] = serialized_post
-            
+
             return Response(response)
-        except ObjectDoesNotExist:
-            return Response({'error': 'Post is not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Category.DoesNotExist:
+            raise NotFound('Category not found')
+        except Post.DoesNotExist:
+            raise NotFound('Post not found')
         
+
     def get_queryset(self):
         queryset = Post.objects.all().order_by('-views') 
         return queryset
@@ -110,13 +115,37 @@ class PostView(APIView):
         
         return response
 
+class StatusView(APIView):
+    serializer_class = StatusSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['blog', 'post__title']
+
+    def get(self, request, *args, **kwargs):
+        try:
+            lang = self.kwargs["lang"]
+            model = Status.objects.filter(language=lang)
+            serialized_status = self.serializer_class(model, many=True).data
+            status_dict = {}
+            for status in serialized_status:
+                translated_blog_name = list(status.keys())[0]
+                status_posts = status.pop(translated_blog_name)
+                status_dict[translated_blog_name] = status_posts
+            return Response(status_dict)
+        except ObjectDoesNotExist:
+            return Response({'error': 'Status is not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    def get_queryset(self):
+        queryset = Status.objects.all()
+        return queryset
+
+
 
 class HeaderView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CatHeaderSerializer
 
     def get(self, request, *args, **kwargs):
-        model = Category.objects.filter(language=self.kwargs["lang"], is_active=True)
+        model = Category.objects.filter(language=self.kwargs["lang"], is_active=True)[:6]
         serializer = self.serializer_class(model, many=True)
         return Response(serializer.data)
 
@@ -155,7 +184,6 @@ class CommentView(APIView):
         return Response(serializer.data)
 
 
-    
 
 class PostSliderView(APIView):
     def get(self, request, slug):
@@ -174,23 +202,25 @@ class PostFileView(APIView):
         try:
             queryset = Post.objects.get(slug=slug)
             serializer = PostSerializer(queryset, context={'request': request})
-
             queryset.save()
-
             return Response(serializer.data)
         except ObjectDoesNotExist:
             return Response({'error': 'Post is not found'}, status=status.HTTP_404_NOT_FOUND)
-        
-    # def list(self, request, *args, **kwargs):
-    #     queryset = self.get_queryset()
-    #     if not queryset.exists():
-    #         return Response(data=None, status=status.HTTP_200_OK)
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     return Response(serializer.data)
+    
 
-    # def post(self, request, format=None):
-    #     serializer = PostFileSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class BannerView(APIView):
+    def get(self, request, *args, **kwargs):
+        now = timezone.now()
+        
+        banners = Banner.objects.filter(date__gte=now)
+        grouped_banners = defaultdict(list)
+        for banner in banners:
+            grouped_banners[banner.blog].append(banner)
+        
+        response_data = {}
+        for blog, banners in grouped_banners.items():
+            random_banner = random.choice(banners)
+            serialized_banner = BannerSerializer(random_banner).data
+            blog_key = serialized_banner.pop('blog')
+            response_data[blog_key] = serialized_banner
+        return Response(response_data)

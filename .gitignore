@@ -6,3 +6,6 @@ resident.sql
 api/media
 media
 env
+templates/admin
+req.txt
+
